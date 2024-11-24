@@ -174,7 +174,7 @@ class User extends AbstractModel
         static::$displayNameDriver = $driver;
     }
 
-    public static function setAvatarUrlDriver(AvatarDriver $driver): void
+    public static function setAvatarDriver(AvatarDriver $driver): void
     {
         static::$avatarUrlDriver = $driver;
     }

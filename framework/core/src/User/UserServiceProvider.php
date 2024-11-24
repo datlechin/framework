@@ -139,7 +139,7 @@ class UserServiceProvider extends AbstractServiceProvider
         User::setPasswordCheckers($container->make('flarum.user.password_checkers'));
         User::setGate($container->makeWith(Access\Gate::class, ['policyClasses' => $container->make('flarum.policies')]));
         User::setDisplayNameDriver($container->make('flarum.user.display_name.driver'));
-        User::setAvatarUrlDriver($container->make('flarum.user.avatar.driver'));
+        User::setAvatarDriver($container->make('flarum.user.avatar.driver'));
 
         $events->listen(Saving::class, SelfDemotionGuard::class);
         $events->listen(Registered::class, AccountActivationMailer::class);
