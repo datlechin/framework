@@ -53,7 +53,8 @@ class AdminPayload
         $document->payload['permissions'] = Permission::map();
         $document->payload['extensions'] = $this->extensions->getExtensions()->toArray();
 
-        $document->payload['displayNameDrivers'] = array_keys($this->container->make('flarum.user.display_name.supported_drivers'));
+        $document->payload['displayNameDrivers'] = array_keys($this->container->make(abstract: 'flarum.user.display_name.supported_drivers'));
+        $document->payload['avatarDrivers'] = array_keys($this->container->make('flarum.user.avatar.supported_drivers'));
         $document->payload['slugDrivers'] = array_map(function ($resourceDrivers) {
             return array_keys($resourceDrivers);
         }, $this->container->make('flarum.http.slugDrivers'));

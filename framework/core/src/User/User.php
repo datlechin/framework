@@ -20,7 +20,8 @@ use Flarum\Group\Permission;
 use Flarum\Http\AccessToken;
 use Flarum\Notification\Notification;
 use Flarum\Post\Post;
-use Flarum\User\DisplayName\DriverInterface;
+use Flarum\User\DisplayName\DriverInterface as DisplayNameDriver;
+use Flarum\User\Avatar\DriverInterface as AvatarDriver;
 use Flarum\User\Event\Activated;
 use Flarum\User\Event\AvatarChanged;
 use Flarum\User\Event\Deleted;
@@ -34,6 +35,7 @@ use Flarum\User\Exception\PermissionDeniedException;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -111,7 +113,9 @@ class User extends AbstractModel
     /**
      * A driver for getting display names.
      */
-    protected static DriverInterface $displayNameDriver;
+    protected static DisplayNameDriver $displayNameDriver;
+
+    protected static AvatarDriver $avatarUrlDriver;
 
     /**
      * The hasher with which to hash passwords.
@@ -165,9 +169,14 @@ class User extends AbstractModel
         static::$gate = $gate;
     }
 
-    public static function setDisplayNameDriver(DriverInterface $driver): void
+    public static function setDisplayNameDriver(DisplayNameDriver $driver): void
     {
         static::$displayNameDriver = $driver;
+    }
+
+    public static function setAvatarUrlDriver(AvatarDriver $driver): void
+    {
+        static::$avatarUrlDriver = $driver;
     }
 
     public static function setPasswordCheckers(array $checkers): void
@@ -253,13 +262,18 @@ class User extends AbstractModel
         return $this;
     }
 
+    public function getOriginalAvatarUrlAttribute(): ?string
+    {
+        return $this->attributes['avatar_url'];
+    }
+
     public function getAvatarUrlAttribute(?string $value = null): ?string
     {
         if ($value && ! str_contains($value, '://')) {
             return resolve(Factory::class)->disk('flarum-avatars')->url($value);
         }
 
-        return $value;
+        return static::$avatarUrlDriver->avatarUrl($this);
     }
 
     public function getDisplayNameAttribute(): string

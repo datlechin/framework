@@ -43,7 +43,7 @@ export default class AvatarEditor extends Component {
       <div className={classList(['AvatarEditor', 'Dropdown', this.attrs.className, this.loading && 'loading', this.isDraggedOver && 'dragover'])}>
         <Avatar user={user} loading="eager" />
         <a
-          className={user.avatarUrl() ? 'Dropdown-toggle' : 'Dropdown-toggle AvatarEditor--noAvatar'}
+          className={user.originalAvatarUrl() ? 'Dropdown-toggle' : 'Dropdown-toggle AvatarEditor--noAvatar'}
           title={app.translator.trans('core.forum.user.avatar_upload_tooltip')}
           data-toggle="dropdown"
           onclick={this.quickUpload.bind(this)}
@@ -55,7 +55,7 @@ export default class AvatarEditor extends Component {
         >
           {this.loading ? (
             <LoadingIndicator display="unset" size="large" />
-          ) : user.avatarUrl() ? (
+          ) : user.originalAvatarUrl() ? (
             <Icon name={'fas fa-pencil-alt'} />
           ) : (
             <Icon name={'fas fa-plus-circle'} />
@@ -134,7 +134,7 @@ export default class AvatarEditor extends Component {
    * @param {MouseEvent} e
    */
   quickUpload(e) {
-    if (!this.attrs.user.avatarUrl()) {
+    if (!this.attrs.user.originalAvatarUrl()) {
       e.preventDefault();
       e.stopPropagation();
       this.openPicker();
